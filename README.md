@@ -7,56 +7,103 @@ API TEs:
 1.0 - Este script tem como finalidade interagir com a API do Transferegov módulo transferências especiais, importar os dados direto da plataforma e filtrar apenas as emendas que vieram para o estado de Minas Gerais e enviar um e-mail para dcgce@casacivil.mg.gov.br informando quais emendas tem planos de trabalho em complementação. 
 
 2.0 - Após importar os dados, o programa gera uma planilha de controle com dados dos planos de ação, dos planos de trabalho, dos executores (SEE, SEMAD, PMMG e etc) e dos relatórios de gestão apenas das emendas indicadas para MG.
-	2.1 - O programa envia um e-mail do dcgce.seplag@gmail.com para dcgce@casacivil.mg.gov.br com uma tabela informando quais emendas tem planos de trabalho em complementação.
-	2.2 - A planilha referenciada no item 2.0 é formatada e enviada em anexo para o e-mail da dcgce@casacivil.mg.gov.br junto da tabela do item 2.1.
+
+2.1 - O programa envia um e-mail do dcgce.seplag@gmail.com para dcgce@casacivil.mg.gov.br com uma tabela informando quais emendas tem planos de trabalho em complementação.
+
+2.2 - A planilha referenciada no item 2.0 é formatada e enviada em anexo para o e-mail da dcgce@casacivil.mg.gov.br junto da tabela do item 2.1.
 
 3.0 - estrutura do programa:
-	3.1 - base_url = URL da API do transferegov, ela puxa os planos de ação especial pelo CNPJ do beneficiário do plano de ação. O link já tem a medida "eq" que significa "=", medida estabelecida pela própria API.
-		3.1.1 - Após definir a URL da API o programa faz uma requisição, se o status for o código WEB 200 (significa que a requisição teve sucesso) o programa salva o conteúdo da resposta em um DataFrame chamado "dados".
-		3.1.2 - É criado a "lista_valores", ela armazena a coluna 'id plano acao' do DataFrame "dados".
-	3.2 - url_base = URL da API do transferegov, ela puxa os planos de trabalho e a medida usada é o 'id plano acao', armazenado na "lista valores", item 3.1.2.
-		3.2.1 - É criado um DataFrame vazio armazenado em "dados_plano_trabalho", ele será utilizado para armazenar informações do plano de trabalho.
-		3.2.2 - Um loop é iniciado, enquanto houver 'valor' na 'lista_valores' o programa vai preencher a variável 'url_completa' com as seguintes variáveis: "url_base"(item 3.2), a string "eq." e 'valor'(que será cada id plano acao que consta na "lista valores").
-		3.2.3 - Com a "url_completa" criada, o programa inicia outra requisição, mas agora puxando os dados dos planos de trabalho de acordo com os planos de ação que estão armazenados na 'lista_valores'(item 3.1.2) e serão armazenados em "dados resposta"
-		3.2.4 - Se houver mais de 0 itens em "dados resposta" o programa utiliza um rbind para preencher o DataFrame "dados_plano_trabalho"(item 3.2.1), se não, ele informa que houve um erro ao acessar os planos de trabalho.
-	3.3 - url_executor = URL da API do transferegov, ela puxa os dados de executor especial (o órgão que está executando a transferência especial) pelo id plano acao.
-		3.3.1 -  É criado um DataFrame vazio armazenado em "dados_executor_especial", ele será utilizado para armazenar informações sobre os executores.
-		3.3.2 - Um loop é iniciado, enquanto houver 'valor' na 'lista_valores' o programa vai preencher a variável 'url_completa_executor' com as seguintes variáveis: "url_executor"(item 3.3), a string "eq." e 'valor'(que será cada id plano acao que consta na "lista valores").
-		3.3.3 - Com a "url_completa_executor" criada, o programa inicia outra requisição, mas agora puxando os dados dos executores de acordo com os planos de ação que estão armazenados na 'lista_valores'(item 3.1.2) e serão armazenados em "dados_resposta_executor".
-		3.3.4 - Se houver mais de 0 itens em "dados_resposta_executor" o programa utiliza um rbind para preencher o DataFrame "dados_executor_especial"(item 3.3.1), se não, ele informa que houve um erro ao acessar os executores especiais.
-	3.4 - url_relatorio_gestao = URL da API do transferegov, ela puxa os dados dos relatórios de gestão (os dados da prestação de contas da transferência especial) pelo id plano acao.
-		3.4.1 -  É criado um DataFrame vazio armazenado em "
+
+3.1 - base_url = URL da API do transferegov, ela puxa os planos de ação especial pelo CNPJ do beneficiário do plano de ação. O link já tem a medida "eq" que significa "=", medida estabelecida pela própria API.
+	
+ 3.1.1 - Após definir a URL da API o programa faz uma requisição, se o status for o código WEB 200 (significa que a requisição teve sucesso) o programa salva o conteúdo da resposta em um DataFrame chamado "dados".
+	
+ 3.1.2 - É criado a "lista_valores", ela armazena a coluna 'id plano acao' do DataFrame "dados".
+	
+3.2 - url_base = URL da API do transferegov, ela puxa os planos de trabalho e a medida usada é o 'id plano acao', armazenado na "lista valores", item 3.1.2.
+		
+  3.2.1 - É criado um DataFrame vazio armazenado em "dados_plano_trabalho", ele será utilizado para armazenar informações do plano de trabalho.
+		
+  3.2.2 - Um loop é iniciado, enquanto houver 'valor' na 'lista_valores' o programa vai preencher a variável 'url_completa' com as seguintes variáveis: "url_base"(item 3.2), a string "eq." e 'valor'(que será cada id plano acao que consta na "lista valores").
+		
+  3.2.3 - Com a "url_completa" criada, o programa inicia outra requisição, mas agora puxando os dados dos planos de trabalho de acordo com os planos de ação que estão armazenados na 'lista_valores'(item 3.1.2) e serão armazenados em "dados resposta"
+		
+  3.2.4 - Se houver mais de 0 itens em "dados resposta" o programa utiliza um rbind para preencher o DataFrame "dados_plano_trabalho"(item 3.2.1), se não, ele informa que houve um erro ao acessar os planos de trabalho.
+	
+ 3.3 - url_executor = URL da API do transferegov, ela puxa os dados de executor especial (o órgão que está executando a transferência especial) pelo id plano acao.
+		
+  3.3.1 -  É criado um DataFrame vazio armazenado em "dados_executor_especial", ele será utilizado para armazenar informações sobre os executores.
+		
+  3.3.2 - Um loop é iniciado, enquanto houver 'valor' na 'lista_valores' o programa vai preencher a variável 'url_completa_executor' com as seguintes variáveis: "url_executor"(item 3.3), a string "eq." e 'valor'(que será cada id plano acao que consta na "lista valores").
+		
+  3.3.3 - Com a "url_completa_executor" criada, o programa inicia outra requisição, mas agora puxando os dados dos executores de acordo com os planos de ação que estão armazenados na 'lista_valores'(item 3.1.2) e serão armazenados em "dados_resposta_executor".
+		
+  3.3.4 - Se houver mais de 0 itens em "dados_resposta_executor" o programa utiliza um rbind para preencher o DataFrame "dados_executor_especial"(item 3.3.1), se não, ele informa que houve um erro ao acessar os executores especiais.
+	
+ 3.4 - url_relatorio_gestao = URL da API do transferegov, ela puxa os dados dos relatórios de gestão (os dados da prestação de contas da transferência especial) pelo id plano acao.
+		
+  3.4.1 -  É criado um DataFrame vazio armazenado em "
 dados_relatorio_gestao", ele será utilizado para armazenar informações sobre os relatórios de gestão.
-		3.4.2 - Um loop é iniciado, enquanto houver 'valor' na 'lista_valores' o programa vai preencher a variável 'url_completa_relatorio_gestao' com as seguintes variáveis: "url_relatorio_gestao"(item 3.4), a string "eq." e 'valor'(que será cada id plano acao que consta na "lista valores").
-		3.4.3 - Com a "url_completa_relatorio_gestao" criada, o programa inicia outra requisição, mas agora puxando os dados dos relatórios de gestão de acordo com os planos de ação que estão armazenados na 'lista_valores'(item 3.1.2) e serão armazenados em "dados_resposta_relatorio_gestao".
-		3.4.4 - Se houver mais de 0 itens em "dados_resposta_relatorio_gestao" o programa utiliza um rbind para preencher o DataFrame "dados_relatorio_gestao"(item 3.4.1), se não, ele informa que houve um erro ao acessar os relatórios de gestão.
-	3.5 - Após cada item (3.1; 3.2; 3.3; 3.4) acontece alteração do nome das colunas dos DataFrames preenchidos com os dados de plano de trabalho, executor e relatório de gestão. #alterando nome das colunas // colnames(dados_relatorio_gestao) <- gsub("_", " ", colnames(dados_relatorio_gestao))
-	3.6 - Começa o tratamento dos dataframes:
-		3.6.1 - 'dados1' recebe 'dados' colunas pertinentes, caso queira ver quais são cada uma, utilize colnames(dados) no console.
-		3.6.2 - 'dados_plano_trabalho1' recebe 'dados_plano_trabalho' colunas pertinentes, caso queira ver quais são cada uma, utilize colnames(dados_plano_trabalho) no console.
-		3.6.3 - 'dados_relatorio_gestao1' recebe 'dados_relatorio_gestao' colunas pertinentes, caso queira ver quais são cada uma, utilize colnames(dados_relatorio_gestao) no console.
-		3.6.4 - Uma coluna de valor total da emenda é criada no DataFrame 'dados1'.
-			3.6.4.1 - Uma coluna de valor total recebido é criada no DataFrame 'dados_executor_especial'.
-		3.6.5 - São feitos 3 left_join's de 'dados1' e 'dados_plano_trabalho1' para variável "consolidada", depois "consolidada" e 'dados_executor_especial' para variável "consolidada1" e por ultimo de 'consolidada1' e 'dados_relatorio_gestao1' para "consolidada2".
-		3.6.6 - É realizado uma formatação de moeda nas colunas de valores.
-		3.6.7 - "consolidada_final" é organizada, utilizar colnames(consolidada_final) para ver a ordem das colunas.
-	3.7 - é criado um workbook em wb para formatar a consolidada final.
-		3.7.1 - O código em si está todo comentado e essa parte não tem nada muito complexo a se alterar e não influencia no funcionamento do programa, apenas na estética da planilha gerada e enviada por e-mail. (item 2.2)
-		3.7.2 - "nome arquivo" recebe o nome da planilha, em saveWorlbook é criado o arquivo todo formatado, utilizando o DataFrame consolidade_final.
-	3.8 - Após a criação do arquivo em .xlsx (item 3.7.2), o programa faz uma leitura dos planos de trabalho que estão com o status "Em Complementação"
-		3.8.1 - "Em Complementação" é um status no transferegov que significa que os Ministérios envolvidos na Emenda analisaram o plano de trabalho e encaminharam eles para o Estado beneficiário para complementar informações do plano de trabalho.
-		3.8.2 - É criado um DataFrame vazio chamado de TE_em_complementacao, será utilizado para armazenar os planos de trabalho com o status "Em complementação".
-		3.8.3 - A variável em complementação vai receber a consolidada final filtrada pela coluna 'sutuacao plano trabalho' que conter "Em Complementação".
-		3.8.4 - É feito um if para se houver mais que 0 linhas em 'em_complementação' ele vai armazenar uma por uma com um rbind no DataFrame TE_em_complementacao, se não vai apresentar "Nenhum plano de trabalho em complementação" no console.
+		
+  3.4.2 - Um loop é iniciado, enquanto houver 'valor' na 'lista_valores' o programa vai preencher a variável 'url_completa_relatorio_gestao' com as seguintes variáveis: "url_relatorio_gestao"(item 3.4), a string "eq." e 'valor'(que será cada id plano acao que consta na "lista valores").
+		
+  3.4.3 - Com a "url_completa_relatorio_gestao" criada, o programa inicia outra requisição, mas agora puxando os dados dos relatórios de gestão de acordo com os planos de ação que estão armazenados na 'lista_valores'(item 3.1.2) e serão armazenados em "dados_resposta_relatorio_gestao".
+		
+  3.4.4 - Se houver mais de 0 itens em "dados_resposta_relatorio_gestao" o programa utiliza um rbind para preencher o DataFrame "dados_relatorio_gestao"(item 3.4.1), se não, ele informa que houve um erro ao acessar os relatórios de gestão.
+	
+ 3.5 - Após cada item (3.1; 3.2; 3.3; 3.4) acontece alteração do nome das colunas dos DataFrames preenchidos com os dados de plano de trabalho, executor e relatório de gestão. #alterando nome das colunas // colnames(dados_relatorio_gestao) <- gsub("_", " ", colnames(dados_relatorio_gestao))
+	
+ 3.6 - Começa o tratamento dos dataframes:
+		
+  3.6.1 - 'dados1' recebe 'dados' colunas pertinentes, caso queira ver quais são cada uma, utilize colnames(dados) no console.
+		
+  3.6.2 - 'dados_plano_trabalho1' recebe 'dados_plano_trabalho' colunas pertinentes, caso queira ver quais são cada uma, utilize colnames(dados_plano_trabalho) no console.
+		
+  3.6.3 - 'dados_relatorio_gestao1' recebe 'dados_relatorio_gestao' colunas pertinentes, caso queira ver quais são cada uma, utilize colnames(dados_relatorio_gestao) no console.
+		
+  3.6.4 - Uma coluna de valor total da emenda é criada no DataFrame 'dados1'.
+			
+   3.6.4.1 - Uma coluna de valor total recebido é criada no DataFrame 'dados_executor_especial'.
+		
+  3.6.5 - São feitos 3 left_join's de 'dados1' e 'dados_plano_trabalho1' para variável "consolidada", depois "consolidada" e 'dados_executor_especial' para variável "consolidada1" e por ultimo de 'consolidada1' e 'dados_relatorio_gestao1' para "consolidada2".
+		
+  3.6.6 - É realizado uma formatação de moeda nas colunas de valores.
+		
+  3.6.7 - "consolidada_final" é organizada, utilizar colnames(consolidada_final) para ver a ordem das colunas.
+	
+ 3.7 - é criado um workbook em wb para formatar a consolidada final.
+		
+  3.7.1 - O código em si está todo comentado e essa parte não tem nada muito complexo a se alterar e não influencia no funcionamento do programa, apenas na estética da planilha gerada e enviada por e-mail. (item 2.2)
+		
+  3.7.2 - "nome arquivo" recebe o nome da planilha, em saveWorlbook é criado o arquivo todo formatado, utilizando o DataFrame consolidade_final.
+	
+ 3.8 - Após a criação do arquivo em .xlsx (item 3.7.2), o programa faz uma leitura dos planos de trabalho que estão com o status "Em Complementação"
+		
+  3.8.1 - "Em Complementação" é um status no transferegov que significa que os Ministérios envolvidos na Emenda analisaram o plano de trabalho e encaminharam eles para o Estado beneficiário para complementar informações do plano de trabalho.
+		
+  3.8.2 - É criado um DataFrame vazio chamado de TE_em_complementacao, será utilizado para armazenar os planos de trabalho com o status "Em complementação".
+		
+  3.8.3 - A variável em complementação vai receber a consolidada final filtrada pela coluna 'sutuacao plano trabalho' que conter "Em Complementação".
+		
+  3.8.4 - É feito um if para se houver mais que 0 linhas em 'em_complementação' ele vai armazenar uma por uma com um rbind no DataFrame TE_em_complementacao, se não vai apresentar "Nenhum plano de trabalho em complementação" no console.
+
 4.0 - Uma estrutura condicional é criada para enviar o e-mail. (item 2.1)
-	4.1 - A estrutura impõe a condição que TE_em_complementacao tem que ter mais que 0 linhas.
-		4.1.1 - Condição atendida, a tabela PT_complementacao é criada (item 2.1) através da TE_em_complementacao, escolhendo apenas as colunas 1, 2 e 21, Parlamentar, Nº Emenda e valor TOTAL da emenda respectivamente.
-		4.1.2 - Começa a criação das variáveis que serão utilizadas no corpo do e-mail, parte do código toda comentada.
-	4.2 - gm_auth_configure configura o json da API do gmail da dcgce (dcgce.seplag@gmail.com).
-		4.2.1 - gm_auth autentica o e-mail "dcgce.seplag@gmail.com".
-		4.2.2 - json.json é a credencial da API, atualmente armazenada no GitHub pasta 'Token', subpasta 'Gmail dcgce'.
-		4.2.3 - gm_send_message envia o e-mail, preenchido pelas variáveis mencionadas no item 4.1.2.
-	4.3 - Caso não haja nenhum plano de trabalho em complementação o e-mail é enviado informando a situação e encaminha a planilha de controle por anexo mesmo assim.
+	
+ 4.1 - A estrutura impõe a condição que TE_em_complementacao tem que ter mais que 0 linhas.
+		
+  4.1.1 - Condição atendida, a tabela PT_complementacao é criada (item 2.1) através da TE_em_complementacao, escolhendo apenas as colunas 1, 2 e 21, Parlamentar, Nº Emenda e valor TOTAL da emenda respectivamente.
+		
+  4.1.2 - Começa a criação das variáveis que serão utilizadas no corpo do e-mail, parte do código toda comentada.
+	
+ 4.2 - gm_auth_configure configura o json da API do gmail da dcgce (dcgce.seplag@gmail.com).
+		
+  4.2.1 - gm_auth autentica o e-mail "dcgce.seplag@gmail.com".
+		
+  4.2.2 - json.json é a credencial da API, atualmente armazenada no GitHub pasta 'Token', subpasta 'Gmail dcgce'.
+		
+  4.2.3 - gm_send_message envia o e-mail, preenchido pelas variáveis mencionadas no item 4.1.2.
+	
+ 4.3 - Caso não haja nenhum plano de trabalho em complementação o e-mail é enviado informando a situação e encaminha a planilha de controle por anexo mesmo assim.
 
 
 OBS: A API do Gmail utilizada é o qv-dcgce, ID do cliente OAuth 2.0 é o qv.		
